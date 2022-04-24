@@ -73,6 +73,7 @@ class StreamReassembler {
      void check_if_need_merge(size_t index,const string& data);
      bool check_if_datasize_too_big(size_t index,string& data);
      bool write_output(size_t index, string& data);
+     void insert_data(size_t index, const string& data);
     
 };
 

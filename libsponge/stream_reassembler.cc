@@ -69,8 +69,8 @@ void StreamReassembler::check_if_need_merge(size_t index,const string& data){
 	 			unorder_data.erase(upindex);//merge with higher
 	 			check_if_need_merge(index, newdata);//after modify recursive check;
 	 		}else{
-	 			if(index == 1)
-	 				cout << "erase upindex = " << upindex <<"upindex data = "<<updata <<"index =" << index << "data = "<< data <<  endl;
+	 			//if(index == 1)
+	 			//	cout << "erase upindex = " << upindex <<"upindex data = "<<updata <<"index =" << index << "data = "<< data <<  endl;
 	 			unorder_data.erase(upindex);
 	 			
 	 		}
@@ -145,7 +145,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 		}
 		return;
 	}
-	size_t len;
+	/*size_t len;
 	
 	if(index == first_unassembled){
 
@@ -175,34 +175,28 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 			 first_unassembled += len;
 		}
 	}
-
-	bool ret = false;
+	*/
+	insert_data(index, data);
+	bool has_no_window = false;
 	for(auto it = unorder_data.begin();it != unorder_data.end();it++){
     	size_t firstindex = it->first;
     	string firstdata = it->second;
     	if(firstindex == first_unassembled){
-    		ret = write_output(firstindex,firstdata);
-    		//check_if_datasize_too_big(firstindex,firstdata);
-    		//len = _output.write(firstdata);
-    		//unassembled_bytes_cnt -= firstdata.size();
-    		unorder_data.erase(firstindex);
-    		//first_unassembled += len;
-    		if(ret)
+    		has_no_window = write_output(firstindex,firstdata);
+    		//unorder_data.erase(firstindex);
+    		if(has_no_window)
     			break;
     	}else if (firstindex < first_unassembled){
-    		if(firstindex + firstdata.size() <= first_unassembled ){
-    			unorder_data.erase(firstindex);
-    		}else{
-    			//check_if_datasize_too_big(firstindex,firstdata);
-    			//len = _output.write(firstdata.substr(first_unassembled - firstindex));
+    		//if(firstindex + firstdata.size() <= first_unassembled ){
+    		//	unorder_data.erase(firstindex);
+    		//}else{
     			string str = firstdata.substr(first_unassembled - firstindex);
-    			ret = write_output(firstindex,str);
-    			unorder_data.erase(firstindex);
-    			//first_unassembled += len;
-    			if(ret)
+    			has_no_window = write_output(firstindex,str);
+    			//unorder_data.erase(firstindex);
+    			if(has_no_window)
     				break;
 
-    		}
+    		//}
     	}else{
     		break;
     	}
@@ -210,6 +204,23 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(_eof && empty()){
     	_output.end_input();
     }
+}
+void StreamReassembler::insert_data(size_t index, const string& data){
+	if(index + data.size() <= first_unassembled){
+		return;
+	}
+	auto it = unorder_data.find(index);
+	if(it != unorder_data.end()){ //find same index , data change to the max one 
+		string samedata = it->second;
+		if(data.size() > samedata.size()){
+			unorder_data[index] = data;
+			check_if_need_merge(index, data);
+		}// smaller do nothing
+	}else{// has no same index ,just insert 
+		unorder_data[index] = data;
+		check_if_need_merge(index, data);
+   }
+		
 }
 bool StreamReassembler::check_if_datasize_too_big(size_t index,string& data){
 	//return;
@@ -224,6 +235,7 @@ bool StreamReassembler::write_output(size_t index, string& data){
 	bool ret = check_if_datasize_too_big(index, data);
 	size_t len = _output.write(data);
 	first_unassembled += len;
+	unorder_data.erase(index);
 	return ret;
 }
 
