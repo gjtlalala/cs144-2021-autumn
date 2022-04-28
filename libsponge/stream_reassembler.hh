@@ -4,15 +4,15 @@
 #include "byte_stream.hh"
 
 #include <cstdint>
-#include <string>
 #include <map>
+#include <string>
 using namespace std;
 /*class UnorderData{
     public:
         size_t index;
         string data;
         UnorderData(size_t _index, string _data):index(_index), data(_data){}
-        bool operator <(UnorderData t) const {return index < t.index;} 
+        bool operator <(UnorderData t) const {return index < t.index;}
 };*/
 
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
@@ -26,17 +26,14 @@ class StreamReassembler {
     size_t first_unread;
     size_t first_unassembled;
     size_t first_unacceptable;
-    //unordered_map<size_t,string> unorder_data;
-    //list<size_t> unorder_index;
-    //set<UnorderData> outoforderdata;
-    //vector<char> data;
+    // unordered_map<size_t,string> unorder_data;
+    // list<size_t> unorder_index;
+    // set<UnorderData> outoforderdata;
+    // vector<char> data;
     bool _eof;
-   
-     size_t unassembled_bytes_cnt;
-    std::map<size_t,string> unorder_data = {};
 
-
-
+    size_t unassembled_bytes_cnt;
+    std::map<size_t, string> unorder_data = {};
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
@@ -70,11 +67,11 @@ class StreamReassembler {
     //! \brief Is the internal state empty (other than the output stream)?
     //! \returns `true` if no substrings are waiting to be assembled
     bool empty() const;
-     void check_if_need_merge(size_t index,const string& data);
-     bool check_if_datasize_too_big(size_t index,string& data);
-     bool write_output(size_t index, string& data);
-     void insert_data(size_t index, const string& data);
-    
+    void check_if_need_merge(size_t index, const string &data);
+    bool check_if_datasize_too_big(size_t index, string &data);
+    bool write_output(size_t index, string &data);
+    void insert_data(size_t index, const string &data);
+    size_t get_first_unassembled() const { return first_unassembled; }
 };
 
 #endif  // SPONGE_LIBSPONGE_STREAM_REASSEMBLER_HH
